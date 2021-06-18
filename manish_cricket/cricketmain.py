@@ -1,50 +1,25 @@
-import random
-import ck
+import cricket_utils
 
+# Creating match summary dictionary
+matchSummary = {}
 
-def toss(hometeam, guestteam):
-    guestteam_choose = int(input("please choose 1 for head and 0 for tails"))
-    coin_face = random.randint(0, 1)
-    print(coin_face)
-    if coin_face == guestteam_choose:
-        print("guest team choose", guestteam_choose, "and won the toss ")
-        return guestteam
-    else:
-        print("guest team chose", guestteam_choose, "loss but home team won the toss")
-        return hometeam
+# Taking team name input from user
+cricket_utils.inputTeamNames(matchSummary)
 
+# Toss Process
+matchSummary["tossWinner"] = cricket_utils.toss(matchSummary.get("hometeam"), matchSummary.get("guestteam"))
+cricket_utils.tossDecisionProcess(matchSummary)
 
-def selection():
-    selected = input("Batfirst or Ball First")
-    return selected
+# Read team list from file
+homeTeam_playing11 = open('hometeam.txt')
+guestTeam_playing11 = open('guestteam.txt')
+matchSummary['home_team_playing_11'] = homeTeam_playing11.read().split()
+matchSummary['guest_team_playing_11'] = guestTeam_playing11.read().split()
 
+# Finding score of each team
+matchSummary["innings1_score"] = cricket_utils.ballByBall(matchSummary, 1)
+matchSummary["innings2_score"] = cricket_utils.ballByBall(matchSummary, 2)
 
-def winner():
-    winner = ""
-    if matchsum["hometeam_score"] > matchsum["guestteam_score"]:
-
-        winner = matchsum["hometeam"]
-    elif matchsum["hometeam_score"] < matchsum["guestteam_score"]:
-        winner = matchsum["guestteam"]
-    else:
-        winner = "both team score is same so the match is draw"
-
-    return winner
-
-
-matchsum = {}
-hometeam = input("please enter home team name")
-guestteam = input("please enter guest team name")
-matchsum["hometeam"] = hometeam
-matchsum["guestteam"] = guestteam
-matchsum["toss winner"] = toss(hometeam, guestteam)
-# print("comentery",matchsum)
-matchsum["selected to"] = selection()
-hometeam_playingxi = open('hometeam.txt')
-guestteam_playingxi = open('guestteam.txt')
-matchsum['hometeamplayingxi'] = hometeam_playingxi.read().split()
-matchsum['guestteamplayingxi'] = guestteam_playingxi.read().split()
-matchsum["hometeam_score"] = ck.ballByBall(matchsum, 1)
-matchsum["guestteam_score"] = ck.ballByBall(matchsum, 2)
-matchsum["match_winner"] = winner()
-print(matchsum)
+# Deciding the winner of each team
+matchSummary["match_winner"] = cricket_utils.winner(matchSummary)
+print(matchSummary)
