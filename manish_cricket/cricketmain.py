@@ -8,7 +8,7 @@ cricket_utils.inputTeamNames(matchSummary)
 
 # Toss Process
 matchSummary["tossWinner"] = cricket_utils.toss(matchSummary.get("hometeam"), matchSummary.get("guestteam"))
-cricket_utils.tossDecisionProcess(matchSummary)
+cricket_utils.toss_decision_process(matchSummary)
 
 # Read team list from file
 homeTeam_playing11 = open('hometeam.txt')
