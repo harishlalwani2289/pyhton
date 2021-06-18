@@ -1,57 +1,45 @@
 import random
 
 
-def ballByBall(matchSummary, inningsNumber):
-    balldata = [0, 1, 2, 3, 4, 5, 6, "wd", "nb", "w"]
+def ballByBall(matchSummary, inningsNumber, file):
+    ball_results = [0, 1, 2, 3, 4, 5, 6, "wd", "nb", "w"]
     w = 0
-    totalruns = 0
+    total_runs = 0
     balls = 0
 
-    if (inningsNumber == 1):
-        print("{0} Batting".format(matchSummary.get("innings1")))
+    if inningsNumber == 1:
+        file.write("{0} Batting\n".format(matchSummary.get("innings1")))
     else:
-        print("{0} Batting".format(matchSummary.get("innings2")))
+        file.write("{0} Batting\n".format(matchSummary.get("innings2")))
 
     # Running balls one by one
     while balls < 60 and w < 10:
+        # Incrementing the ball
         balls = balls + 1
-        cb = random.choices(balldata, weights=[10, 12, 8, 4, 5, 4, 3, 1, 1, 4], k=1)
-        print("InningsNumber{2}, Ball Number {0}, Result : {1}".format(balls, cb, inningsNumber))
 
-        if cb[0] == "wd" or cb[0] == "nb":
+        # Getting current ball result
+        current_ball_result = random.choices(ball_results, weights=[10, 12, 8, 4, 5, 4, 3, 1, 1, 4], k=1)
 
-            totalruns = totalruns + 1
+        # Commentary printing
+        file.write(
+            "Innings Number {2}, Ball Number {0}, Result : {1}\n".format(balls, current_ball_result, inningsNumber))
+
+        # Updating total runs and wickets as required
+        if current_ball_result[0] == "wd" or current_ball_result[0] == "nb":
+            total_runs = total_runs + 1
             balls = balls - 1
-        elif cb[0] == 0:
-            totalruns = totalruns + 0
-
-
-        elif cb[0] == 1:
-            totalruns = totalruns + 1
-
-        elif cb[0] == 2:
-            totalruns = totalruns + 2
-
-        elif cb[0] == 3:
-
-            totalruns = totalruns + 3
-        elif cb[0] == 4:
-
-            totalruns = totalruns + 4
-        elif cb[0] == 5:
-
-            totalruns = totalruns + 5
-            balls = balls - 1
-        elif cb[0] == 6:
-
-            totalruns = totalruns + 6
-        else:
+        elif current_ball_result[0] == "w":
             w = w + 1
+        else:
+            total_runs = total_runs + current_ball_result[0]
 
-        if inningsNumber == 2 and totalruns > int(matchSummary.get("innings1_score")):
-            return totalruns
+        # Checking if second batting team has won the match
+        if inningsNumber == 2 and total_runs > \
+                int(matchSummary.get("innings1_score")[0:matchSummary.get("innings1_score").index("-")]):
+            return str(total_runs) + "-" + str(w)
 
-    return totalruns
+
+    return str(total_runs) + "-" + str(w)
 
 
 def toss(homeTeam, guestTeam):
@@ -59,15 +47,15 @@ def toss(homeTeam, guestTeam):
     coin_face = random.randint(0, 1)
     print(coin_face)
     if coin_face == guestTeam_choose:
-        print(guestTeam,"chose", "Head" if guestTeam_choose == 1 else "Tails", "and won the toss ")
+        print(guestTeam, "chose", "Head" if guestTeam_choose == 1 else "Tails", "and won the toss ")
         return guestTeam
     else:
-        print(guestTeam,"chose", "Head" if guestTeam_choose == 1 else "Tails", "and lost the toss ")
+        print(guestTeam, "chose", "Head" if guestTeam_choose == 1 else "Tails", "and lost the toss ")
         print(homeTeam, "won the toss")
         return homeTeam
 
 
-def tossDecisionProcess(matchSummary):
+def toss_decision_process(matchSummary):
     selected = input("Bat first or Ball First")
     matchSummary["tossDecision"] = selected
     if matchSummary.get("tossWinner") == matchSummary.get("guestteam") and selected == "Bat":

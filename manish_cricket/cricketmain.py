@@ -17,8 +17,9 @@ matchSummary['home_team_playing_11'] = homeTeam_playing11.read().split()
 matchSummary['guest_team_playing_11'] = guestTeam_playing11.read().split()
 
 # Finding score of each team
-matchSummary["innings1_score"] = cricket_utils.ballByBall(matchSummary, 1)
-matchSummary["innings2_score"] = cricket_utils.ballByBall(matchSummary, 2)
+with open("matchDetails.txt", "w") as file:
+    matchSummary["innings1_score"] = cricket_utils.ballByBall(matchSummary, 1, file)
+    matchSummary["innings2_score"] = cricket_utils.ballByBall(matchSummary, 2, file)
 
 # Deciding the winner of each team
 matchSummary["match_winner"] = cricket_utils.winner(matchSummary)
