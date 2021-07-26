@@ -1,4 +1,5 @@
 import random
+import csv
 
 
 def ballByBall(matchSummary, inningsNumber, file):
@@ -9,36 +10,60 @@ def ballByBall(matchSummary, inningsNumber, file):
 
     if inningsNumber == 1:
         file.write("{0} Batting\n".format(matchSummary.get("innings1")))
+        player_to_bat = list(matchSummary.get(matchSummary.get("innings1") + '_playing_11')).copy()
+        print("Player to Bat :", player_to_bat)
+        wickets = []
+        striker = player_to_bat.pop(0)  # First player in list
+        non_striker = player_to_bat.pop(0)  # First player in list, which is actually 2nd player to bat
+        file_mode = 'w'
     else:
         file.write("{0} Batting\n".format(matchSummary.get("innings2")))
+        player_to_bat = list(matchSummary.get(matchSummary.get("innings2") + '_playing_11')).copy()
+        print("Player to Bat :", player_to_bat)
+        wickets = []
+        striker = player_to_bat.pop(0)
+        non_striker = player_to_bat.pop(0)
+        file_mode = 'a'
 
-    # Running balls one by one
-    while balls < 60 and w < 10:
-        # Incrementing the ball
-        balls = balls + 1
+    with open("ballDetails.csv", file_mode, newline='') as ballDetailsFile:
+        writer = csv.writer(ballDetailsFile)
+        if (file_mode == 'w'): writer.writerow(["InningsNumber", "Ball Number", "Ball Result", "Batsman"])
+        # Running balls one by one
+        while balls < 60 and w < 10:
 
-        # Getting current ball result
-        current_ball_result = random.choices(ball_results, weights=[10, 12, 8, 4, 5, 4, 3, 1, 1, 4], k=1)
+            # Incrementing the ball
+            balls = balls + 1
 
-        # Commentary printing
-        file.write(
-            "Innings Number {2}, Ball Number {0}, Result : {1}\n".format(balls, current_ball_result, inningsNumber))
+            # Getting current ball result
+            current_ball_result = random.choices(ball_results, weights=[10, 12, 8, 4, 5, 4, 3, 1, 1, 4], k=1)
 
-        # Updating total runs and wickets as required
-        if current_ball_result[0] == "wd" or current_ball_result[0] == "nb":
-            total_runs = total_runs + 1
-            balls = balls - 1
-        elif current_ball_result[0] == "w":
-            w = w + 1
-        else:
-            total_runs = total_runs + current_ball_result[0]
+            # Storing the ball details
+            writer.writerow([inningsNumber, balls, current_ball_result[0], striker])
 
-        # Checking if second batting team has won the match
-        if inningsNumber == 2 and total_runs > \
-                int(matchSummary.get("innings1_score")[0:matchSummary.get("innings1_score").index("-")]):
-            return str(total_runs) + "-" + str(w)
+            # Commentary printing
+            file.write(
+                "Innings Number {2},Batsman {3} Ball Number {0}, Result : {1}\n".format(balls, current_ball_result[0],
+                                                                                        inningsNumber, striker))
 
+            # Updating total runs and wickets as required
+            if current_ball_result[0] == "wd" or current_ball_result[0] == "nb":
+                total_runs = total_runs + 1
+                balls = balls - 1
+            elif current_ball_result[0] == "w":
+                w = w + 1
+                wickets.append(striker)
+                striker = player_to_bat.pop(0)
+            else:
+                total_runs = total_runs + current_ball_result[0]
+                if (current_ball_result[0] % 2 == 0 and balls % 6 == 0) or (current_ball_result[0] % 2 != 0 and balls % 6 != 0):
+                    striker, non_striker = non_striker, striker
 
+            # Checking if second batting team has won the match
+            if inningsNumber == 2 and total_runs > \
+                    int(matchSummary.get("innings1_score")[0:matchSummary.get("innings1_score").index("-")]):
+                print("Innings 2 wickets : {0}".format(wickets))
+                return str(total_runs) + "-" + str(w)
+    print("Innings " + str(inningsNumber) + " wickets : {0}".format(wickets))
     return str(total_runs) + "-" + str(w)
 
 

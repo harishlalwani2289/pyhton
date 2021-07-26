@@ -1,6 +1,7 @@
 
 import random
 
+
 def toss(home, away):
     selected_coin_side = input("Away team please select head/tails 0/1")
     des = random.randint(0, 1)
@@ -11,3 +12,7 @@ def toss(home, away):
     else:
         print(away, " team won the toss.")
         return home
+
+def toss_Decision():
+    decision = input("Bat/Ball")
+    return decision
